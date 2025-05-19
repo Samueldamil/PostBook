@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostBook - Post</title>
+    <link rel="stylesheet" href="./styles/style.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header class="header">
+        <img class="logo" src="./images/logo.png" alt="Logo" />
+        <nav>
+            <a href="index.html"><i class="fa-solid fa-arrow-left"></i></a>
+        </nav>
+    </header>
+    
+    <section class="post-section">
+        <div class="container">
+            <h1>Create Post</h1>
+            <form id="postForm" enctype="multipart/form-data">
+		<input type="hidden" id="userIdInput" name="userId" value="" />
+                <textarea id="content" name="content" placeholder="Write something..." required></textarea>
+                
+                <label for="media" class="upload-icon">
+                    <i class="fa-solid fa-file-image"></i>
+                    <span class="upload-content">Photos</span>
+                </label>
+                <input type="file" id="media" name="file" accept="image/*" multiple/>
+		<div id="imagePreviewContainer"></div>
+                <button id="submitBtn">Post</button>
+		<span class="loader" id="loading" style="display: none;"></span>
+            </form>
+        </div>
+    </section>
+    <script src="./scripts/auth-check.js"></script>
+    <script src="./scripts/image-prev.js"></script>
+    <script src="./scripts/post.js" defer></script>
+</body>
+</html>
