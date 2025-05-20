@@ -1,19 +1,27 @@
 import express from "express";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import dotenv from "dotenv";
 import mongoose from "mongoose";
-import fs from "fs";
-import path from "path";
 import Post from "../models/Post.js";
+
+dotenv.config();
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "postbook_uploads",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    transformation: [{ width: 800, crop: "limit" }],
   },
 });
 
@@ -22,7 +30,7 @@ const upload = multer({ storage });
 router.post('/create', upload.array("file", 5), async (req, res) => {
   try {
     const { userId, content } = req.body;
-    const fileUrls = req.files.map(file => `uploads/${file.filename}`);
+    const fileUrls = req.files.map(file => file.path);
 	
     const newPost = new Post({ user: new mongoose.Types.ObjectId(userId), content, fileUrls });
     await newPost.save();
@@ -68,14 +76,14 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     if (Array.isArray(post.fileUrls)) {
-      post.fileUrls.forEach(fileUrl => {
-	const filePath = path.join("public", fileUrl);
-	fs.unlink(filePath, (err) => {
-	  if (err && err.code !== 'ENOENT') {
-	    console.error(`Failed to delete file: ${filePath}`, err);
-	  }
-	});
-      });
+      for (const url of post.fileUrls) {
+	const parts = url.split("/");
+	const fileName = parts[parts.length - 1];
+
+	const publicId = `postbook_uploads/${fileName.split(".")[0]}`;
+
+	await cloudinary.uploader.destroy(publicId);
+      }
     }
 
     await Post.findByIdAndDelete(req.params.id);

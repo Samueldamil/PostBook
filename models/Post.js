@@ -7,6 +7,7 @@ const postSchema = new mongoose.Schema({
   },
   fileUrls: {
     type: [String],
+    default: [],
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
